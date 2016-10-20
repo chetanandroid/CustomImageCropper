@@ -1,3 +1,9 @@
 <resources>
-    <string name="app_name">SimpleCropImage</string>
+    <string name="app_name">Simple Crop Image</string>
+    <string name="camera">Camera</string>
+    <string name="write_storage_permission">Write file to storage</string>
+    <string name="you_need_to_grant_access_to">You need to grant access to</string>
+    <string name="permission_required_by_application_denied">Permission required by application denied</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
 </resources>

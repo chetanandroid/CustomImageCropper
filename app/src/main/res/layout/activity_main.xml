@@ -8,17 +8,14 @@
         android:id="@+id/imageViewMain"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/txtViewOpenDialog"/>
+        android:layout_above="@+id/btnOpenDialog"/>
 
-    <TextView
-        android:id="@+id/txtViewOpenDialog"
+    <Button
+        android:id="@+id/btnOpenDialog"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerInParent="true"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:padding="16dp"
-        android:text="Open Dialog To Pick Image"
-        android:textColor="@android:color/white"/>
+        android:text="Select Image"/>
 
 </RelativeLayout>
