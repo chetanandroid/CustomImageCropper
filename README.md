@@ -4,7 +4,7 @@ Supports **Picking Image from Camera and Gallery**.
 
 **Must Add The Following To Get The Project Working-->>**
 
-Include the following dependency in your build.gradle file. Please use the latest version available.
+-- Include the following dependency in your build.gradle file. Please use the latest version available.
 
     repositories { 
         jcenter() 
@@ -13,3 +13,15 @@ Include the following dependency in your build.gradle file. Please use the lates
     dependencies { 
         compile 'com.isseiaoki:simplecropview:1.1.4' 
     }
+
+-- Add below permissions to your manifest
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    
+    (For Android Marshmallow (6.0) Please add runtime permissions.
+    
+-- Library used 
+    
+   https://github.com/IsseiAoki/SimpleCropView
+    
