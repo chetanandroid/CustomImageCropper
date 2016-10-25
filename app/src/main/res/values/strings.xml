@@ -1,9 +1,14 @@
 <resources>
     <string name="app_name">Simple Crop Image</string>
     <string name="camera">Camera</string>
-    <string name="write_storage_permission">Write file to storage</string>
+    <string name="read_storage_permission">Read external storage</string>
+    <string name="write_storage_permission">Write file to external storage</string>
     <string name="you_need_to_grant_access_to">You need to grant access to</string>
     <string name="permission_required_by_application_denied">Permission required by application denied</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
+    <string name="no_space">No space left to save photo</string>
+    <string name="error_saving_image">Error while saving image</string>
+    <string name="error_cropping_image">Error while cropping image</string>
+    <string name="error_loading_image">Error while loading image</string>
 </resources>

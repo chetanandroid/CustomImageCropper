@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.isseiaoki.simplecropview.CropImageView;
 import com.isseiaoki.simplecropview.callback.CropCallback;
@@ -27,7 +28,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Refer This Link to The Base Library --- https://github.com/IsseiAoki/SimpleCropView --- Current Mod By CS
+ * Refer This Link to The Base Library --- https://github.com/IsseiAoki/SimpleCropView --- Current Modified By CS
  **/
 public class CropActivity extends AppCompatActivity implements View.OnClickListener {
     private String TAG = CropActivity.class.getSimpleName();
@@ -131,6 +132,7 @@ public class CropActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public void onError() {
             hideProgress();
+            Toast.makeText(CropActivity.this, getString(R.string.error_loading_image), Toast.LENGTH_SHORT).show();
         }
     };
 
@@ -141,6 +143,7 @@ public class CropActivity extends AppCompatActivity implements View.OnClickListe
 
         @Override
         public void onError() {
+            Toast.makeText(CropActivity.this, getString(R.string.error_cropping_image), Toast.LENGTH_SHORT).show();
         }
     };
 
@@ -160,6 +163,7 @@ public class CropActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public void onError() {
             hideProgress();
+            Toast.makeText(CropActivity.this, getString(R.string.error_saving_image), Toast.LENGTH_SHORT).show();
         }
     };
 

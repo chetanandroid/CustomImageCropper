@@ -1,6 +1,7 @@
 package com.simplecropimage.cs;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -8,19 +9,29 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
+@SuppressWarnings("all")
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+    private static String TAG = MainActivity.class.getSimpleName();
+    private String capturedImagePath;
     private ImageView imageViewMain;
     private Button btnOpenDialog;
     private int REQUEST_CAPTURE_IMAGE = 1, REQUEST_PICK_IMAGE = 2, REQUEST_CROP_IMAGE = 3;
@@ -49,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btnOpenDialog:
                 //checking runtime permission for marshmallow and higher versions
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    checkRuntimePermissions();
+                    checkIfRequiredPermissionsAreGrantedForApp();
                 } else {
                     selectImage();
                 }
@@ -75,8 +86,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void openCamera() {
-        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(cameraIntent, REQUEST_CAPTURE_IMAGE);
+        File photoFile = null;
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            try {
+                photoFile = createImageFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if (photoFile == null) {
+            Toast.makeText(MainActivity.this, getString(R.string.no_space), Toast.LENGTH_SHORT).show();
+        } else {
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+            startActivityForResult(intent, REQUEST_CAPTURE_IMAGE);
+        }
     }
 
     private void openGallery() {
@@ -90,15 +114,73 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        File image = File.createTempFile("JPEG_" + timeStamp + "_", ".jpg", Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM));
+        capturedImagePath = image.getAbsolutePath();
+        return image;
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent result) {
         super.onActivityResult(requestCode, resultCode, result);
-        if ((requestCode == REQUEST_CAPTURE_IMAGE || requestCode == REQUEST_PICK_IMAGE) && resultCode == RESULT_OK) {
+        if (requestCode == REQUEST_CAPTURE_IMAGE && resultCode == RESULT_OK) {
+            if (capturedImagePath != null) {
+                Log.d("GET Camera PATH:", capturedImagePath);
+            }
+            /**
+             * Here appending "file://" to filepath is must,
+             * otherwise the uri is not properly generated to pass to the cropping activity
+             * */
+            Uri uri = Uri.parse("file://" + capturedImagePath);
+            if (!TextUtils.isEmpty(capturedImagePath)) {
+                Intent intent = new Intent(MainActivity.this, CropActivity.class);
+                intent.setData(uri);
+                intent.putExtra("crop-type", "customRatio");
+                //Specify the crop view type using intent -- if you don't set crop type then square is set as default
+                /*****
+                 *intent.putExtra("crop-type","square");
+                 *intent.putExtra("crop-type","fitImage");
+                 *intent.putExtra("crop-type", "free");
+                 *intent.putExtra("crop-type", "circle");
+                 *intent.putExtra("crop-type", "circleSquare");
+                 *intent.putExtra("crop-type", "ratio3*4");
+                 *intent.putExtra("crop-type", "ratio4*3");
+                 *intent.putExtra("crop-type", "ratio9*16");
+                 *intent.putExtra("crop-type", "ratio16*9");
+                 *
+                 * //If you use custom ratio, you should also send x and y ratios through intents as below,
+                 * //if you don't send x and y ratios then, 1 is taken bydefault
+                 * intent.putExtra("crop-type", "customRatio");
+                 * intent.putExtra("xRatio", 1);
+                 * intent.putExtra("yRatio", 1);
+                 ***/
+                startActivityForResult(intent, REQUEST_CROP_IMAGE);
+                capturedImagePath = null;//reset filepath to remove previous image path from variable
+            }
+        } else if (requestCode == REQUEST_PICK_IMAGE && resultCode == RESULT_OK) {
             Uri uri = result.getData();
             Intent intent = new Intent(MainActivity.this, CropActivity.class);
             intent.setData(uri);
-            //Specify the crop view type using intent -- if you don't set crop type then square is default
-            //intent.putExtra("crop-type","square");
+            intent.putExtra("crop-type", "customRatio");
+            //Specify the crop view type using intent -- if you don't set crop type then square is set as default
+            /*****
+             *intent.putExtra("crop-type","square");
+             *intent.putExtra("crop-type","fitImage");
+             *intent.putExtra("crop-type", "free");
+             *intent.putExtra("crop-type", "circle");
+             *intent.putExtra("crop-type", "circleSquare");
+             *intent.putExtra("crop-type", "ratio3*4");
+             *intent.putExtra("crop-type", "ratio4*3");
+             *intent.putExtra("crop-type", "ratio9*16");
+             *intent.putExtra("crop-type", "ratio16*9");
+             *
+             * //If you use custom ratio, you should also send x and y ratios through intents as below,
+             * //if you don't send x and y ratios then, 1 is taken bydefault
+             * intent.putExtra("crop-type", "customRatio");
+             * intent.putExtra("xRatio", 1);
+             * intent.putExtra("yRatio", 1);
+             ***/
             startActivityForResult(intent, REQUEST_CROP_IMAGE);
         } else if (requestCode == REQUEST_CROP_IMAGE && resultCode == RESULT_OK) {
             imageViewMain.setImageBitmap(BitmapFactory.decodeFile(result.getStringExtra("cropped-image-path")));
@@ -106,12 +188,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     /*****
-    * All The code below checks Runtime Permissions for Andoid Marshmallow and Higher
-    ***/
-    private void checkRuntimePermissions() {
+     * All The code below checks Runtime Permissions for Andoid Marshmallow and Higher
+     ***/
+    @TargetApi(Build.VERSION_CODES.M)
+    private void checkIfRequiredPermissionsAreGrantedForApp() {
+        // Check if we have SYSTEM_ALERT_WINDOW permission for Android 6.0
         List<String> permissionsNeeded = new ArrayList<String>();
 
-        final List<String> permissionsList = new ArrayList<String>();
+        final List<String> permissionsList = new ArrayList<>();
         if (!addPermission(permissionsList, Manifest.permission.CAMERA))
             permissionsNeeded.add(getString(R.string.camera));
         if (!addPermission(permissionsList, Manifest.permission.WRITE_EXTERNAL_STORAGE))
@@ -119,7 +203,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (permissionsList.size() > 0) {
             if (permissionsNeeded.size() > 0) {
                 // Need Rationale
-                String message = getString(R.string.you_need_to_grant_access_to) + permissionsNeeded.get(0);
+                String message = getString(R.string.you_need_to_grant_access_to) + " " + permissionsNeeded.get(0);
                 for (int i = 1; i < permissionsNeeded.size(); i++)
                     message = message + ", " + permissionsNeeded.get(i);
                 showMessageOKCancel(message, new DialogInterface.OnClickListener() {
@@ -136,8 +220,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         selectImage();
     }
 
+    @TargetApi(Build.VERSION_CODES.M)
     private boolean addPermission(List<String> permissionsList, String permission) {
-        if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(MainActivity.this, permission) != PackageManager.PERMISSION_GRANTED) {
             permissionsList.add(permission);
             // Check for Rationale Option
             if (!shouldShowRequestPermissionRationale(permission))
@@ -150,25 +235,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
             case REQUEST_CODE_APP_PERMISSIONS: {
-                Map<String, Integer> perms = new HashMap<String, Integer>();
-                // Initial
-                perms.put(Manifest.permission.CAMERA, PackageManager.PERMISSION_GRANTED);
-                perms.put(Manifest.permission.WRITE_EXTERNAL_STORAGE, PackageManager.PERMISSION_GRANTED);
-                // Fill with results
-                for (int i = 0; i < permissions.length; i++)
-                    perms.put(permissions[i], grantResults[i]);
-                // Check for CAMERA & WRITE_EXTERNAL_STORAGE permission
-                if (perms.get(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED && perms.get(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                    // All Permissions Granted
-                    selectImage();
+                if (grantResults.length > 0) {
+                    for (int grantResult : grantResults) {
+                        if (grantResult != PackageManager.PERMISSION_GRANTED) {
+                            Toast.makeText(MainActivity.this, getString(R.string.permission_required_by_application_denied), Toast.LENGTH_SHORT).show();
+                            //We require all permissions to run app, so close app user rejects any permission
+                            finish();
+                            return;
+                        }
+                    }
+                    checkIfRequiredPermissionsAreGrantedForApp();
                 } else {
-                    //Some Permission Denied
                     Toast.makeText(MainActivity.this, getString(R.string.permission_required_by_application_denied), Toast.LENGTH_SHORT).show();
+                    //We require all permissions to run app, so close app user rejects any permission
+                    finish();
                 }
+                return;
             }
-            break;
-            default:
-                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 
