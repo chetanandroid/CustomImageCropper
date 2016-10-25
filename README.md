@@ -2,7 +2,7 @@ Simple Custom Image Cropping View based on SimpleCropView.
 
 It's very useful to use this activity on the devices which has landscape camera and the captured image is sometimes rotated in results.
 
--- Modifications added to existing library --
+-- Modifications added to existing library --</br>
 1. Added support to capture image from camera and also pickup from gallery (Existing library only supported picking gallery image)</br>
 2. Picture quality taken by camera is lossless after cropping (Also supports rotation of image).</br>
 3. User defined directory name to save cropped images.</br>
