@@ -7,8 +7,9 @@ It's very useful to use this activity on the devices which has landscape camera 
 2. Picture quality taken by camera is lossless after cropping (Also supports rotation of image).</br>
 3. User defined directory name to save cropped images.</br>
 4. Send cropping shape name via intent and cropping activty will select the cropping shape depending on intent values.</br>
-5. Simplified flow (Existing library was much more complex to implement and understand the flow)</br>
-6. All new code (Replaced deprecated code of existing library)</br>
+5. Supports custom colors for crop view</br>
+6. Simplified flow (Existing library was much more complex to implement and understand the flow)</br>
+7. All new code (Replaced deprecated code of existing library)</br>
 
 Supports **Picking Image from Camera and Gallery**.
 
