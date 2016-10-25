@@ -19,7 +19,7 @@ Supports **Picking Image from Camera and Gallery**.
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     
-    (For Android Marshmallow (6.0) Please add runtime permissions.
+    (Android Marshmallow Runtime Permissions Code Already Added)
     
 -- Library used 
     
