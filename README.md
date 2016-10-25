@@ -8,7 +8,7 @@ It's very useful to use this activity on the devices which has landscape camera 
 3. User defined directory name to save cropped images.</br>
 4. Send cropping shape name via intent and cropping activty will select the cropping shape depending on intent values.</br>
 5. Simplified flow (Existing library was much more complex to implement and understand the flow)</br>
-6. All new code (Replaced deprecated code of existing library)</br></br>
+6. All new code (Replaced deprecated code of existing library)</br>
 
 Supports **Picking Image from Camera and Gallery**.
 
